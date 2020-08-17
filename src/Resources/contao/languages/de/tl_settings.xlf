@@ -1,0 +1,18 @@
+<?xml version="1.0" ?><xliff version="1.1">
+    <file datatype="php" original="src/Resources/contao/languages/en/tl_settings.php" source-language="en" target-language="de">
+        <body>
+            <trans-unit id="tl_settings.autowrap_legend">
+                <source>Autowrap</source>
+                <target>Autowrap</target>
+            </trans-unit>
+            <trans-unit id="tl_settings.autowrapElementTypes.0">
+                <source>Elements Auto Wrap</source>
+                <target>Elements Auto Wrap</target>
+            </trans-unit>
+            <trans-unit id="tl_settings.autowrapElementTypes.1">
+                <source>Comma separated content element types that are automatically going to be wrapped.</source>
+                <target>Comma separated content element types that are automatically going to be wrapped.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
