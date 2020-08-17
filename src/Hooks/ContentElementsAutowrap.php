@@ -53,6 +53,11 @@ class ContentElementsAutowrap
      */
     public function getContentElement($objRow, $strBuffer, $objElement)
     {
+        if (TL_MODE !== 'FE')
+        {
+            return $strBuffer;
+        }
+
         if (empty($this->arrElementTypesToAutoWrap))
         {
             return $strBuffer;
