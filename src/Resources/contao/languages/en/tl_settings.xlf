@@ -9,7 +9,7 @@
                 <source>Elements Auto Wrap</source>
             </trans-unit>
             <trans-unit id="tl_settings.autowrapElementTypes.1">
-                <source>Comma separated content element types that are automatically going to be wrapped.</source>
+                <source>Content element types that are automatically going to be wrapped.</source>
             </trans-unit>
         </body>
     </file>

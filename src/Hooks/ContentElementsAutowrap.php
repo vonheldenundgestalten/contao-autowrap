@@ -21,7 +21,7 @@ class ContentElementsAutowrap
     protected $wrapperStart = '<div class="autowrap autowrap-%s autowrap-element-count-#autowrap-element-count#">';
 
     /** @var string */
-    public $wrapperEnd = '</div><!-- AUTO WRAPPER END -->';
+    public $wrapperEnd = '</div>';
 
     /** @var string */
     public $wrapperEndPossible = '<!-- POSSIBLE AUTO WRAPPER END -->';
@@ -40,7 +40,7 @@ class ContentElementsAutowrap
      */
     public function __construct()
     {
-        $this->arrElementTypesToAutoWrap = explode(',', Config::get('autowrapElementTypes'));
+        $this->arrElementTypesToAutoWrap = unserialize(Config::get('autowrapElementTypes'));
     }
 
     /**
