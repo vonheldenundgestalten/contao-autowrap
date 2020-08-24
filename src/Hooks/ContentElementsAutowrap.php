@@ -10,27 +10,15 @@ class ContentElementsAutowrap
 {
     /** @var array */
     protected $arrElementTypesToAutoWrap;
-    
-    /** @var bool */
-    protected static $currentlyWrapping;
-
-    /** @var string */
-    protected static $previousElementType;
 
     /** @var string */
     protected $wrapperStart = '<div class="autowrap autowrap-%s autowrap-element-count-#autowrap-element-count#">';
 
     /** @var string */
-    public $wrapperEnd = '</div>';
+    protected $wrapperEnd = '</div>';
 
     /** @var string */
-    public $wrapperEndPossible = '<!-- POSSIBLE AUTO WRAPPER END -->';
-
-    /** @var string */
-    protected $bufferPre;
-
-    /** @var string */
-    protected $bufferPost;
+    protected static $previousElementType;
 
     /** @var array */
     public static $elementsCount = [];
@@ -63,54 +51,86 @@ class ContentElementsAutowrap
             return $strBuffer;
         }
 
-        $this->bufferPre = '';
-        $this->bufferPost = '';
-
-        // Close previously opened wrapper
-        if (static::$previousElementType && in_array(static::$previousElementType, $this->arrElementTypesToAutoWrap) && ($objElement->type !== static::$previousElementType))
-        {
-            $this->bufferPre = $this->wrapperEnd;
-            static::$currentlyWrapping = false;
-        }
-
-        // Open wrapper
-        if (!static::$currentlyWrapping && in_array($objElement->type, $this->arrElementTypesToAutoWrap))
-        {
-            $this->bufferPre .= sprintf($this->wrapperStart, $objElement->type);
-            static::$currentlyWrapping = true;
-        }
-
         if (in_array($objElement->type, $this->arrElementTypesToAutoWrap))
         {
-            // Add always possible closing wrapper (as comment). Later we uncomment just the last one in the sequence, see method modifyFrontendPage()
-            // We do this as we do not know if we have more elements in the sequence at this point
-            // This method is invoked once per element and there is no clue if there is next element at all
-            $this->bufferPost = $this->wrapperEndPossible;
+            $blnWrapperStart = $this->wrapperStart($objElement);
+            if ($blnWrapperStart)
+            {
+                $strBuffer = sprintf($this->wrapperStart, $objElement->type) . $strBuffer;
+            }
+            
+            if ($this->wrapperEnd($objElement))
+            {
+                $strBuffer .= $this->wrapperEnd;
+            }
 
-            // Add to elements count
-            $this->addCount($objElement->type);
+            if ($blnWrapperStart)
+            {
+                static::$elementsCount[] = 1;
+
+            } else {
+                static::$elementsCount[count(static::$elementsCount) - 1] += 1;
+            }
         }
 
-
-        static::$previousElementType = $objElement->type;
-
-        return $this->bufferPre . $strBuffer . $this->bufferPost;
+        return $strBuffer;
     }
 
     /**
-     * @param string $currentElementType
+     * @param ContentElement $objElement
+     * @return bool
      */
-    protected function addCount($currentElementType)
+    protected function wrapperStart($objElement)
     {
-        if ($currentElementType === static::$previousElementType)
-        {
-            ++static::$elementsCount[count(static::$elementsCount) - 1];
+        $objCte = ContentModel::findPublishedByPidAndTable($objElement->pid, $objElement->ptable);
+        $arrCtes = $objCte->fetchAll();
 
-        } else {
-            static::$elementsCount[] = 1;
+        foreach ($arrCtes as $k => $arrCte)
+        {
+            // Current element
+            if ($objElement->id == $arrCte['id'])
+            {
+                // It is first element or previous element is not of the same type
+                if ($k === 0 || $arrCtes[$k - 1]['type'] !== $objElement->type)
+                {
+                    return true;
+                }   
+            }
         }
+
+        return false;
     }
 
+    /**
+     * @param ContentElement $objElement
+     * @return bool
+     */
+    protected function wrapperEnd($objElement)
+    {
+        $objCte = ContentModel::findPublishedByPidAndTable($objElement->pid, $objElement->ptable);
+        $arrCtes = $objCte->fetchAll();
+
+        foreach ($arrCtes as $k => $arrCte)
+        {
+            // Current element
+            if ($objElement->id == $arrCte['id'])
+            {
+                // It is already last element or the next element is not of the same type
+                if ($k === (count($arrCtes) - 1) || (array_key_exists($k - 1, $arrCtes) && $arrCtes[$k + 1]['type'] !== $objElement->type))
+                {
+                    return true;
+                }   
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $strBuffer
+     * @return string $strTemplateName
+     * @return string
+     */
     public function modifyFrontendPage($strBuffer, $strTemplateName)
     {
         if ('fe_page' !== $strTemplateName)
@@ -118,16 +138,7 @@ class ContentElementsAutowrap
             return $strBuffer;
         }
 
-        // Uncomment last possible auto wrapper end
-        if (in_array(static::$previousElementType, $this->arrElementTypesToAutoWrap))
-        {
-            $strBuffer = $this->str_lreplace($this->wrapperEndPossible, $this->wrapperEnd, $strBuffer);
-        }
-
-        // Remove all possible wrapper end leftovers
-        $strBuffer = str_replace($this->wrapperEndPossible, '', $strBuffer);
-
-        // Replace placeholders with element count
+        // Replace placeholders with element counts
         foreach (static::$elementsCount as $count)
         {
             $needle = '#autowrap-element-count#';
@@ -138,17 +149,5 @@ class ContentElementsAutowrap
         }
 
         return $strBuffer;
-    }
-
-    protected function str_lreplace($search, $replace, $subject)
-    {
-        $pos = strrpos($subject, $search);
-
-        if ($pos !== false)
-        {
-            $subject = substr_replace($subject, $replace, $pos, strlen($search));
-        }
-
-        return $subject;
     }
 }
