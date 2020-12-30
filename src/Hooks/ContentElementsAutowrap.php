@@ -133,7 +133,7 @@ class ContentElementsAutowrap
      */
     public function modifyFrontendPage($strBuffer, $strTemplateName)
     {
-        if ('fe_page' !== $strTemplateName)
+        if ('fe_page' !== substr($strTemplateName, 0, 7))
         {
             return $strBuffer;
         }
