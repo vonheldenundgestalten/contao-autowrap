@@ -12,10 +12,10 @@ class ContentElementsAutowrap
     protected $arrElementTypesToAutoWrap;
 
     /** @var string */
-    protected $wrapperStart = '<div class="autowrap autowrap-%s autowrap-element-count-#autowrap-element-count#">';
+    protected $wrapperStart = '<div class="autowrap autowrap-%s autowrap-element-count-#autowrap-element-count#"><div class="inside">';
 
     /** @var string */
-    protected $wrapperEnd = '</div>';
+    protected $wrapperEnd = '</div></div>';
 
     /** @var string */
     protected static $previousElementType;
