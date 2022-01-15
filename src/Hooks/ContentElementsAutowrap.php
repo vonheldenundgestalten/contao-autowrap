@@ -72,6 +72,28 @@ class ContentElementsAutowrap
                 static::$elementsCount[count(static::$elementsCount) - 1] += 1;
             }
         }
+        elseif($objElement->type == 'alias'){
+            // fetch the Alias element, and check if it's in the autowrap list, then start the logic
+            $objAliasElement = ContentModel::findByPk($objElement->cteAlias);
+            $blnWrapperStart = $this->wrapperStart($objAliasElement);
+            if ($blnWrapperStart)
+            {
+                $strBuffer = sprintf($this->wrapperStart, $objAliasElement->type) . $strBuffer;
+            }
+            
+            if ($this->wrapperEnd($objAliasElement))
+            {
+                $strBuffer .= $this->wrapperEnd;
+            }
+
+            if ($blnWrapperStart)
+            {
+                static::$elementsCount[] = 1;
+
+            } else {
+                static::$elementsCount[count(static::$elementsCount) - 1] += 1;
+            }
+        }
 
         return $strBuffer;
     }
