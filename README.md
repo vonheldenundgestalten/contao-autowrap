@@ -16,4 +16,7 @@ Elements and Aliases *for the same element* can be mixed.
 
 * Go to settings and select which elements should be wrapped
 * Done :)
-* Multiple content elements can be selected - but we only create groups of the same elements within one wrap.
+
+<img src="https://github.com/magmell-agentur/contao-autowrap/screenshot-settings.png" title="Screenshot of the Element selection" width="585">
+
+Multiple content elements can be selected - but we only create groups of the same elements within one wrap.
