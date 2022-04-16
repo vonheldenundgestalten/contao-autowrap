@@ -138,7 +138,7 @@ class ContentElementsAutowrap
             if ($objElement->id == $arrCte['id'])
             {
                 // It is already last element or the next element is not of the same type
-                if ($k === (count($arrCtes) - 1) || (array_key_exists($k - 1, $arrCtes) && $arrCtes[$k + 1]['type'] !== $objElement->type))
+                if ($k === (count($arrCtes) - 1) || (array_key_exists($k + 1, $arrCtes) && $arrCtes[$k + 1]['type'] !== $objElement->type))
                 {
                     return true;
                 }   
