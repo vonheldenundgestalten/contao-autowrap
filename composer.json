@@ -1,5 +1,5 @@
 {
-    "name": "magmell-agentur/contao-autowrap",
+    "name": "vonheldenundgestalten/contao-autowrap",
     "description": "Contao 4 bundle to wrap content elements for easier page layout and HTML organization.",
     "type": "contao-bundle",
     "authors": [
