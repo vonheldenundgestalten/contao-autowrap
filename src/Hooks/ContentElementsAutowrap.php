@@ -41,17 +41,17 @@ class ContentElementsAutowrap
      */
     public function getContentElement($objRow, $strBuffer, $objElement)
     {
-        if (TL_MODE !== 'FE')
+        if (TL_MODE !== 'FE') 
         {
             return $strBuffer;
         }
 
-        if (empty($this->arrElementTypesToAutoWrap))
+        if (empty($this->arrElementTypesToAutoWrap)) 
         {
             return $strBuffer;
         }
 
-        if (in_array($objElement->type, $this->arrElementTypesToAutoWrap))
+        if ($objElement->type !== "alias" && in_array($objElement->type, $this->arrElementTypesToAutoWrap)) 
         {
             $blnWrapperStart = $this->wrapperStart($objElement);
             if ($blnWrapperStart)
@@ -67,33 +67,35 @@ class ContentElementsAutowrap
             if ($blnWrapperStart)
             {
                 static::$elementsCount[] = 1;
-
             } else {
                 static::$elementsCount[count(static::$elementsCount) - 1] += 1;
             }
         }
-        elseif($objElement->type == 'alias'){
+        elseif($objElement->type == "alias") {
             // fetch the Alias element, and check if it's in the autowrap list, then start the logic
             $objAliasElement = ContentModel::findByPk($objElement->cteAlias);
-            $blnWrapperStart = $this->wrapperStart($objAliasElement);
-            if ($blnWrapperStart)
-            {
-                $strBuffer = sprintf($this->wrapperStart, $objAliasElement->type) . $strBuffer;
-            }
-            
-            if ($this->wrapperEnd($objAliasElement))
-            {
-                $strBuffer .= $this->wrapperEnd;
-            }
 
-            if ($blnWrapperStart)
-            {
-                static::$elementsCount[] = 1;
+            if (in_array($objAliasElement->type, $this->arrElementTypesToAutoWrap)) {
 
-            } else {
-                static::$elementsCount[count(static::$elementsCount) - 1] += 1;
+                $blnWrapperStart = $this->wrapperStart($objAliasElement);
+
+                if ($blnWrapperStart) {
+                    $strBuffer = sprintf($this->wrapperStart, $objAliasElement->type) . $strBuffer;
+                }
+
+                if ($this->wrapperEnd($objAliasElement)) {
+                    $strBuffer .= $this->wrapperEnd;
+                }
+
+                if ($blnWrapperStart) {
+                    static::$elementsCount[] = 1;
+                } else {
+                    static::$elementsCount[count(static::$elementsCount) - 1] += 1;
+                }
             }
         }
+
+
 
         return $strBuffer;
     }
