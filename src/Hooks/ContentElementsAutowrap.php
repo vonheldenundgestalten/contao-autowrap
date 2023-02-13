@@ -53,6 +53,7 @@ class ContentElementsAutowrap
 
         if ($objElement->type !== "alias" && in_array($objElement->type, $this->arrElementTypesToAutoWrap)) 
         {
+
             $blnWrapperStart = $this->wrapperStart($objElement);
             if ($blnWrapperStart)
             {
@@ -72,12 +73,13 @@ class ContentElementsAutowrap
             }
         }
         elseif($objElement->type == "alias") {
+
             // fetch the Alias element, and check if it's in the autowrap list, then start the logic
             $objAliasElement = ContentModel::findByPk($objElement->cteAlias);
-
+	
             if (in_array($objAliasElement->type, $this->arrElementTypesToAutoWrap)) {
 
-                $blnWrapperStart = $this->wrapperStart($objAliasElement);
+                $blnWrapperStart = $this->wrapperStart($objElement);
 
                 if ($blnWrapperStart) {
                     $strBuffer = sprintf($this->wrapperStart, $objAliasElement->type) . $strBuffer;
