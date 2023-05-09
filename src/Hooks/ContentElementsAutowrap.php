@@ -79,7 +79,7 @@ class ContentElementsAutowrap
 	
             if (in_array($objAliasElement->type, $this->arrElementTypesToAutoWrap)) {
 
-                $blnWrapperStart = $this->wrapperStart($objElement);
+                $blnWrapperStart = $this->wrapperStart($objAliasElement);
 
                 if ($blnWrapperStart) {
                     $strBuffer = sprintf($this->wrapperStart, $objAliasElement->type) . $strBuffer;

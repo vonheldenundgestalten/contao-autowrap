@@ -1,3 +1,4 @@
 .idea/
 vendor/
 sftp-config.json
+.vscode/ftp-sync.json
