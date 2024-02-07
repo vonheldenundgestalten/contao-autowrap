@@ -3,8 +3,11 @@
 namespace Magmell\Contao\Autowrap\Hooks;
 
 use Contao\Config;
+use Contao\System;
 use Contao\ContentElement;
 use Contao\ContentModel;
+use Contao\CoreBundle\Routing\ScopeMatcher;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ContentElementsAutowrap
 {
@@ -36,12 +39,11 @@ class ContentElementsAutowrap
      *
      * @param ContentModel $objRow
      * @param string $strBuffer
-     * @param ContentElement $objElement
      * @return string
      */
-    public function getContentElement($objRow, $strBuffer, $objElement)
+    public function getContentElement($objRow, $strBuffer)
     {
-        if (TL_MODE !== 'FE') 
+        if (!System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create('')))
         {
             return $strBuffer;
         }
@@ -51,16 +53,15 @@ class ContentElementsAutowrap
             return $strBuffer;
         }
 
-        if ($objElement->type !== "alias" && in_array($objElement->type, $this->arrElementTypesToAutoWrap)) 
+        if ($objRow->type !== "alias" && in_array($objRow->type, $this->arrElementTypesToAutoWrap)) 
         {
-
-            $blnWrapperStart = $this->wrapperStart($objElement);
+            $blnWrapperStart = $this->wrapperStart($objRow);
             if ($blnWrapperStart)
             {
-                $strBuffer = sprintf($this->wrapperStart, $objElement->type) . $strBuffer;
+                $strBuffer = sprintf($this->wrapperStart, $objRow->type) . $strBuffer;
             }
             
-            if ($this->wrapperEnd($objElement))
+            if ($this->wrapperEnd($objRow))
             {
                 $strBuffer .= $this->wrapperEnd;
             }
@@ -72,10 +73,10 @@ class ContentElementsAutowrap
                 static::$elementsCount[count(static::$elementsCount) - 1] += 1;
             }
         }
-        elseif($objElement->type == "alias") {
+        elseif($objRow->type == "alias") {
 
             // fetch the Alias element, and check if it's in the autowrap list, then start the logic
-            $objAliasElement = ContentModel::findByPk($objElement->cteAlias);
+            $objAliasElement = ContentModel::findByPk($objRow->cteAlias);
 	
             if (in_array($objAliasElement->type, $this->arrElementTypesToAutoWrap)) {
 
@@ -97,27 +98,25 @@ class ContentElementsAutowrap
             }
         }
 
-
-
         return $strBuffer;
     }
 
     /**
-     * @param ContentElement $objElement
+     * @param ContentModel $objRow
      * @return bool
      */
-    protected function wrapperStart($objElement)
+    protected function wrapperStart($objRow)
     {
-        $objCte = ContentModel::findPublishedByPidAndTable($objElement->pid, $objElement->ptable);
+        $objCte = ContentModel::findPublishedByPidAndTable($objRow->pid, $objRow->ptable);
         $arrCtes = $objCte->fetchAll();
 
         foreach ($arrCtes as $k => $arrCte)
         {
             // Current element
-            if ($objElement->id == $arrCte['id'])
+            if ($objRow->id == $arrCte['id'])
             {
                 // It is first element or previous element is not of the same type
-                if ($k === 0 || $arrCtes[$k - 1]['type'] !== $objElement->type)
+                if ($k === 0 || $arrCtes[$k - 1]['type'] !== $objRow->type)
                 {
                     return true;
                 }   
@@ -128,21 +127,21 @@ class ContentElementsAutowrap
     }
 
     /**
-     * @param ContentElement $objElement
+     * @param ContentElement $objRow
      * @return bool
      */
-    protected function wrapperEnd($objElement)
+    protected function wrapperEnd($objRow)
     {
-        $objCte = ContentModel::findPublishedByPidAndTable($objElement->pid, $objElement->ptable);
+        $objCte = ContentModel::findPublishedByPidAndTable($objRow->pid, $objRow->ptable);
         $arrCtes = $objCte->fetchAll();
 
         foreach ($arrCtes as $k => $arrCte)
         {
             // Current element
-            if ($objElement->id == $arrCte['id'])
+            if ($objRow->id == $arrCte['id'])
             {
                 // It is already last element or the next element is not of the same type
-                if ($k === (count($arrCtes) - 1) || (array_key_exists($k + 1, $arrCtes) && $arrCtes[$k + 1]['type'] !== $objElement->type))
+                if ($k === (count($arrCtes) - 1) || (array_key_exists($k + 1, $arrCtes) && $arrCtes[$k + 1]['type'] !== $objRow->type))
                 {
                     return true;
                 }   

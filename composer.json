@@ -1,6 +1,6 @@
 {
     "name": "vonheldenundgestalten/contao-autowrap",
-    "description": "Contao 4 bundle to wrap content elements for easier page layout and HTML organization.",
+    "description": "Contao 5.3 bundle to wrap content elements for easier page layout and HTML organization.",
     "type": "contao-bundle",
     "authors": [
         {
@@ -12,20 +12,25 @@
             "name": "Marko Todić",
             "email": "drexplosiveweb@gmail.com",
             "role": "Developer"
+        },
+        {
+            "name": "Jannis Jirschik",
+            "email": "jannis.jirschik@vhug.de",
+            "role": "Developer"
         }
     ],
     "require": {
-    	"contao/core-bundle": "^4.9"
+    	"contao/core-bundle": "^5.3"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.3.1"
     },
     "extra": {
-        "contao-manager-plugin": "Magmell\\Contao\\Autowrap\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "VHUG\\Contao\\Autowrap\\ContaoManager\\Plugin"
     },
     "autoload": {
         "psr-4": {
-            "Magmell\\Contao\\Autowrap\\": "src"
+            "VHUG\\Contao\\Autowrap\\": "src"
         },
         "classmap": [
             "src/Resources/contao/"
