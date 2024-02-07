@@ -26,11 +26,11 @@
         "contao/manager-plugin": "^2.3.1"
     },
     "extra": {
-        "contao-manager-plugin": "VHUG\\Contao\\Autowrap\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "Magmell\\Contao\\Autowrap\\ContaoManager\\Plugin"
     },
     "autoload": {
         "psr-4": {
-            "VHUG\\Contao\\Autowrap\\": "src"
+            "Magmell\\Contao\\Autowrap\\": "src"
         },
         "classmap": [
             "src/Resources/contao/"
